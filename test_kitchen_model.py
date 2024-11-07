@@ -58,8 +58,8 @@ def test_create_meal(mock_cursor):
     create_meal(meal="Test Dinner", cuisine="Imaginary", price=5.0, difficulty="LOW")
 
     expected_query = normalize_whitespace("""
-        INSERT INTO songs (meal, cuisine, price, difficulty)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO meals (meal, cuisine, price, difficulty)
+        VALUES (?, ?, ?, ?)
     """)
 
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
@@ -82,7 +82,7 @@ def test_create_meal_duplicate(mock_cursor):
     mock_cursor.execute.side_effect = sqlite3.IntegrityError("UNIQUE constraint failed: meals.meal")
 
     # Expect the function to raise a ValueError with a specific message when handling the IntegrityError
-    with pytest.raises(ValueError, match="Meal with name 'Test Dinner' already exists."):
+    with pytest.raises(ValueError, match="Meal with name 'Test Dinner' already exists"):
         create_meal(meal="Test Dinner", cuisine="Imaginary", price=5.0, difficulty="LOW")
 
 
@@ -90,11 +90,11 @@ def test_create_meal_invalid_price():
     """Test error when trying to create a meal with an invalid price (e.g., negative price)"""
 
     # Attempt to create a meal with a negative price
-    with pytest.raises(ValueError, match="Invalid meal price: -5.0 \(must be a positive float\)."):
+    with pytest.raises(ValueError, match="Invalid price: -5.0. Price must be a positive number."):
         create_meal(meal="Test Dinner", cuisine="Imaginary", price=-5.0, difficulty="LOW")
 
     # Attempt to create a meal with a non-float price
-    with pytest.raises(ValueError, match="Invalid meal price: invalid \(must be a positive float\)."):
+    with pytest.raises(ValueError, match="Invalid price: invalid. Price must be a positive number."):
         create_meal(meal="Test Dinner", cuisine="Imaginary", price="invalid", difficulty="LOW")
 
 
@@ -102,11 +102,11 @@ def test_create_meal_invalid_difficulty():
     """Test error when trying to create a meal with an invalid difficulty (e.g., integer or unexpected string)."""
 
     # Attempt to create a meal with a difficulty of 1
-    with pytest.raises(ValueError, match="Invalid difficulty provided: 1 \(must be the string 'LOW', 'MID' or 'HIGH'\)."):
+    with pytest.raises(ValueError, match="Invalid difficulty level: 1. Must be 'LOW', 'MED', or 'HIGH'."):
         create_meal(meal="Test Dinner", cuisine="Imaginary", price=5.0, difficulty=1)
 
     # Attempt to create a meal with a difficulty of "SUPER"
-    with pytest.raises(ValueError, match="Invalid difficulty provided: SUPER \(must be the string 'LOW', 'MID' or 'HIGH'\)."):
+    with pytest.raises(ValueError, match="Invalid difficulty level: SUPER. Must be 'LOW', 'MED', or 'HIGH'."):
         create_meal(meal="Test Dinner", cuisine="Imaginary", price=5.0, difficulty="SUPER")
 
 
@@ -160,7 +160,7 @@ def test_delete_meal_already_deleted(mock_cursor):
     mock_cursor.fetchone.return_value = ([True])
 
     # Expect a ValueError when attempting to delete a song that's already been deleted
-    with pytest.raises(ValueError, match="Meal with ID 999 has already been deleted"):
+    with pytest.raises(ValueError, match="Meal with ID 999 has been deleted"):
         delete_meal(999)
 
 
@@ -168,7 +168,7 @@ def test_clear_meals(mock_cursor, mocker):
     """Test clearing the entire meals list (removes all meals)."""
 
     # Mock the file reading
-    mocker.patch.dict('os.environ', {'SQL_CREATE_TABLE_PATH': 'sql/create_song_table.sql'})
+    mocker.patch.dict('os.environ', {'SQL_CREATE_TABLE_PATH': 'sql/create_meal_table.sql'})
     mock_open = mocker.patch('builtins.open', mocker.mock_open(read_data="The body of the create statement"))
 
     # Call the clear_database function
@@ -201,7 +201,7 @@ def test_get_meal_by_id(mock_cursor):
     assert result == expected_result, f"Expected {expected_result}, got {result}"
 
     # Ensure the SQL query was executed correctly
-    expected_query = normalize_whitespace("SELECT id, meal, cuisine, price, difficulty, deleted FROM songs WHERE id = ?")
+    expected_query = normalize_whitespace("SELECT id, meal, cuisine, price, difficulty, deleted FROM meals WHERE id = ?")
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
 
     # Assert that the SQL query was correct
@@ -248,7 +248,7 @@ def test_get_meal_by_name(mock_cursor):
     actual_arguments = mock_cursor.execute.call_args[0][1]
 
     # Assert that the SQL query was executed with the correct arguments
-    expected_arguments = ("Test Dinner")
+    expected_arguments = ("Test Dinner",)
     assert actual_arguments == expected_arguments, f"The SQL query arguments did not match. Expected {expected_arguments}, got {actual_arguments}."
 
 
@@ -282,7 +282,7 @@ def test_update_meal_stats_win(mock_cursor):
     assert actual_arguments == expected_arguments, f"The SQL query arguments did not match. Expected {expected_arguments}, got {actual_arguments}."
 
 
-def test_update_meal_stats_lose(mock_cursor):
+def test_update_meal_stats_loss(mock_cursor):
     """Test updating the win count of a meal on a loss."""
 
     # Simulate that the meal exists and is not deleted (id = 1)
@@ -290,7 +290,7 @@ def test_update_meal_stats_lose(mock_cursor):
 
     # Call the update_meal_stats function with a sample meal ID
     meal_id = 1
-    result = "lose"
+    result = "loss"
     update_meal_stats(meal_id, result)
 
     # Normalize the expected SQL query
@@ -323,7 +323,7 @@ def test_update_meal_stats_invalid_result(mock_cursor):
     result = "tie"
 
     # Attempt to update a meal with a result of tie
-    with pytest.raises(ValueError, match="Invalid result provided: tie \(must be the string 'win' or 'lose'\)."):
+    with pytest.raises(ValueError, match="Invalid result: tie. Expected 'win' or 'loss'."):
         update_meal_stats(meal_id, result)
 
 
@@ -336,7 +336,7 @@ def test_update_meal_stats_deleted_meal(mock_cursor):
 
     # Expect a ValueError when attempting to update a deleted song
     with pytest.raises(ValueError, match="Meal with ID 1 has been deleted"):
-        update_meal_stats(1)
+        update_meal_stats(1, "win")
 
     # Ensure that no SQL query for updating play count was executed
     mock_cursor.execute.assert_called_once_with("SELECT deleted FROM meals WHERE id = ?", (1,))
