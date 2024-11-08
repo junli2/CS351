@@ -154,6 +154,8 @@ prep_combatant() {
 
   if [ $? -eq 0 ]; then
     echo "Combatant meal is prepared successfully."
+    echo "Combatants JSON:"
+    echo "$response" | jq .
   else
     echo "Failed to prepare combatant meal."
     exit 1
