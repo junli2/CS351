@@ -139,7 +139,7 @@ prep_combatant() {
   meal=$1
 
   echo "Preparing combatant meal ($meal)..."
-  response=$(curl -s -X GET "$BASE_URL/prep_combatant/$meal")
+  response=$(curl -s -X GET "$BASE_URL/prep_combatant")
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Meal prepared successfully: ($meal)."
     if [ "$ECHO_JSON" = true ]; then
@@ -174,3 +174,5 @@ get_meal_by_id 5
 get_meal_by_name "Sushi"
 
 prep_combatant "Sushi"
+prep_combatant "Hot pot"
+battle
