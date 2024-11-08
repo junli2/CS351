@@ -143,7 +143,7 @@ prep_combatant() {
     -H "Content-Type: application/json" \
     -d "{\"meal\": \"$meal\"}")
 
-  if echo "$response" | grep -q '"status": "success"'; then
+  if [ $? -eq 0 ]; then
     echo "Combatant meal is prepared successfully."
   else
     echo "Failed to prepare combatant meal."
