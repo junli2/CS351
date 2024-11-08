@@ -130,6 +130,11 @@ get_meal_by_name() {
 #
 ##########################################################
 
+battle() {
+  echo "Battle starts..."
+  curl -s -X DELETE "$BASE_URL/battle" | grep -q '"status": "success"'
+}
+
 prep_combatant() {
   meal=$1
 
@@ -168,4 +173,4 @@ get_meal_by_id 3
 get_meal_by_id 5
 get_meal_by_name "Sushi"
 
-prep_combatant "Hot pot"
+prep_combatant "Sushi"
