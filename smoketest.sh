@@ -139,7 +139,7 @@ prep_combatant() {
   meal=$1
 
   echo "Preparing combatant meal ($meal)..."
-  response=$(curl -s -X GET "$BASE_URL/prep_combatant")
+  response=$(curl -s -X POST "$BASE_URL/prep_combatant")
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Meal prepared successfully: ($meal)."
     if [ "$ECHO_JSON" = true ]; then
