@@ -4,7 +4,7 @@
 BASE_URL="http://localhost:5000/api"
 
 # Flag to control whether to echo JSON output
-ECHO_JSON=false
+ECHO_JSON=true
 
 # Parse command-line arguments
 while [ "$#" -gt 0 ]; do
