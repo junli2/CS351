@@ -148,14 +148,16 @@ prep_combatant() {
   meal=$1
 
   echo "Preparing combatant meal ($meal)..."
-  response=$(curl -s -X POST "$BASE_URL/prep_combatant" \
+  response=$(curl -s -X POST "$BASE_URL/prep-combatant" \
     -H "Content-Type: application/json" \
-    -d "{\"meal\":\"$meal\"}")
+    -d "{\"meal\": \"$meal\"}")
 
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Combatant meal is prepared successfully."
-    echo "Combatants JSON:"
-    echo "$response" | jq .
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Combatants JSON:"
+      echo "$response" | jq .
+    fi
   else
     echo "Failed to prepare combatant meal."
     exit 1
