@@ -180,6 +180,21 @@ get_combatants() {
   fi
 }
 
+clear-combatants() {
+  echo "Clearing all combatants..."
+  response=$(curl -s -X POST "$BASE_URL/clear-combatants")
+
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "All combatants cleared successfully."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Combatants JSON:"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to clear all combatants."
+    exit 1
+  fi
+}
 
 ##########################################################
 # Health checks
@@ -202,7 +217,13 @@ get_meal_by_id 5
 get_meal_by_name "Sushi"
 
 prep_combatant "Sushi"
-get_combatants
 prep_combatant "Hot pot"
+get_combatants
+battle
+clear-combatants
+get_combatants
+
+prep_combatant "Pasta"
+prep_combatant "Fried chicken"
 get_combatants
 battle
