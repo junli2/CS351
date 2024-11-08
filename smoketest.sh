@@ -96,6 +96,8 @@ get_meal_by_id() {
   response=$(curl -s -X GET "$BASE_URL/get-meal-by-id/$meal_id")
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Meal retrieved successfully by ID ($meal_id)."
+    echo "Meal JSON (ID $meal_id):"
+    echo "$response" | jq .
     if [ "$ECHO_JSON" = true ]; then
       echo "Meal JSON (ID $meal_id):"
       echo "$response" | jq .
@@ -113,6 +115,8 @@ get_meal_by_name() {
   response=$(curl -s -X GET "$BASE_URL/get-meal-by-name/$meal_name")
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Meal retrieved successfully by name ($meal_name)."
+    echo "Meal JSON (ID $meal_name):"
+    echo "$response" | jq .
     if [ "$ECHO_JSON" = true ]; then
       echo "Meal JSON (ID $meal_name):"
       echo "$response" | jq .
