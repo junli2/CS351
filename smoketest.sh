@@ -180,7 +180,7 @@ get_combatants() {
   fi
 }
 
-clear-combatants() {
+clear_combatants() {
   echo "Clearing all combatants..."
   response=$(curl -s -X POST "$BASE_URL/clear-combatants")
 
@@ -220,7 +220,7 @@ prep_combatant "Sushi"
 prep_combatant "Hot pot"
 get_combatants
 battle
-clear-combatants
+clear_combatants
 get_combatants
 
 prep_combatant "Pasta"
