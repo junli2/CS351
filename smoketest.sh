@@ -58,6 +58,23 @@ clear_meals() {
   curl -s -X DELETE "$BASE_URL/clear-meals" | grep -q '"status": "success"'
 }
 
+create_meal() {
+  meal=$1
+  cuisine=$2
+  price=$3
+  difficulty=$4
+
+  echo "Adding meal ($meal - $cuisine, $difficulty) to the meals..."
+  curl -s -X POST "$BASE_URL/create-meal" -H "Content-Type: application/json" \
+    -d "{\"meal\":\"$meal\", \"cuisine\":\"$cuisine\", \"price\":$price, \"difficulty\":\"$difficulty\"}" | grep -q '"status": "success"'
+
+  if [ $? -eq 0 ]; then
+    echo "Meal added successfully."
+  else
+    echo "Failed to add meal."
+    exit 1
+  fi
+}
 
 
 ##########################################################
@@ -67,4 +84,11 @@ check_db
 
 # Clear the meals
 clear_meals
+
+# Create meals
+create_meal "Fried chicken" "Chinese" 12.99 "MED"
+create_meal "Pizza" "Italian" 7.99 "LOW"
+create_meal "Pasta" "Italian" 10.99 "MED"
+create_meal "Sushi" "Japenese" 11.99 "MED"
+create_meal "Hot pot" "Chinese" 15.99 "HIGH"
 
