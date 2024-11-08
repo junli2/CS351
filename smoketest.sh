@@ -106,6 +106,47 @@ get_meal_by_id() {
   fi
 }
 
+get_meal_by_name() {
+  meal_name=$1
+
+  echo "Getting meal by name ($meal_name)..."
+  response=$(curl -s -X GET "$BASE_URL/get-meal-by-name/$meal_name")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Meal retrieved successfully by name ($meal_name)."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Meal JSON (ID $meal_name):"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to get meal by name ($meal_name)."
+    exit 1
+  fi
+}
+
+
+##########################################################
+#
+# Battle Management
+#
+##########################################################
+
+prep_combatant() {
+  meal=$1
+
+  echo "Preparing combatant meal ($meal)..."
+  response=$(curl -s -X GET "$BASE_URL/prep_combatant/$meal")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Meal prepared successfully: ($meal)."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Meal JSON (ID $meal):"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to prepare meal: ($meal)."
+    exit 1
+  fi
+}
+
 
 ##########################################################
 # Health checks
@@ -125,3 +166,6 @@ create_meal "Hot pot" "Chinese" 15.99 "HIGH"
 delete_meal_by_id 2
 get_meal_by_id 3
 get_meal_by_id 5
+get_meal_by_name "Sushi"
+
+prep_combatant "Hot pot"
