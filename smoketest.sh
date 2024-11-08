@@ -243,6 +243,5 @@ prep_combatant "Pasta"
 prep_combatant "Fried chicken"
 get_combatants
 battle
-battle
 
 get_leaderboard
