@@ -216,6 +216,7 @@ get_meal_by_id 3
 get_meal_by_id 5
 get_meal_by_name "Sushi"
 
+clear_combatants
 prep_combatant "Sushi"
 prep_combatant "Hot pot"
 get_combatants
