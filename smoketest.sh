@@ -196,6 +196,21 @@ clear_combatants() {
   fi
 }
 
+get_leaderboard() {
+  echo "Getting leaderboard sorted by wins..."
+  response=$(curl -s -X GET "$BASE_URL/leaderboard?sort=wins")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Leaderboard retrieved successfully."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Leaderboard JSON (sorted by wins):"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to get leaderboard."
+    exit 1
+  fi
+}
+
 ##########################################################
 # Health checks
 check_health
@@ -228,3 +243,6 @@ prep_combatant "Pasta"
 prep_combatant "Fried chicken"
 get_combatants
 battle
+battle
+
+get_leaderboard
