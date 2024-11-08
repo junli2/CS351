@@ -132,7 +132,16 @@ get_meal_by_name() {
 
 battle() {
   echo "Battle starts..."
-  curl -s -X DELETE "$BASE_URL/battle" | grep -q '"status": "success"'
+  response=$(curl -s -X GET "$BASE_URL/battle")
+  if echo "$response" | grep -q '"status": "success"'; then
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Battle result:"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to get battle result."
+    exit 1
+  fi
 }
 
 prep_combatant() {
