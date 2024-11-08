@@ -166,6 +166,8 @@ get_combatants() {
 
   if echo "$response" | grep -q '"status": "success"'; then
     echo "All combatants retrieved successfully."
+    echo "Combatants JSON:"
+    echo "$response" | jq .
     if [ "$ECHO_JSON" = true ]; then
       echo "Combatants JSON:"
       echo "$response" | jq .
